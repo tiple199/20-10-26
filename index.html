@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Chúc Mừng 20/10 • Đóa Hoa Tri Ân & Thiệp Chúc</title>
+  <meta name="description" content="Trang web thiệp hoa nghệ thuật chúc mừng ngày Phụ nữ Việt Nam 20/10 sang trọng, ấm áp và ngập tràn yêu thương.">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Playfair+Display:ital,wght@0,600;0,700;0,900;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Ambient Falling Petals Canvas -->
+  <canvas id="petalsCanvas"></canvas>
+
+  <!-- Mobile Screen Frame - Starts in View-Only (Ngắm Hoa trước) -->
+  <div class="luxury-app-frame view-only" id="appFrame">
+    <!-- Gorgeous Bouquet Background Photo -->
+    <div class="frame-bg-image" style="background-image: url('assets/bg_roses.jpg');"></div>
+    <div class="frame-bg-gradient-overlay"></div>
+
+    <!-- Top Navigation Bar -->
+    <header class="luxury-top-bar">
+      <div class="badge-brand">
+        <span class="blinking-heart">💖</span>
+        <span class="brand-text">20 Tháng 10 • Tri Ân Phụ Nữ</span>
+      </div>
+
+      <div class="top-nav-actions">
+        <!-- Toggle Music -->
+        <button id="btn-toggle-music" class="circle-btn" title="Bật/Tắt giai điệu yêu thương" aria-label="Bật nhạc">
+          <i class="fa-solid fa-music"></i>
+          <span class="wave-indicator"></span>
+        </button>
+
+        <!-- Toggle View Mode (Xem Thiệp / Ngắm Hoa) -->
+        <button id="btn-toggle-view" class="pill-toggle-btn" title="Mở/Đóng thiệp chúc">
+          <i class="fa-solid fa-envelope-open-text" id="viewModeIcon"></i>
+          <span id="viewModeText">Xem Thiệp</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- INTERACTIVE HOTSPOT ANNOTATION PINS ON THE BOUQUET -->
+    <div class="bouquet-hotspots-container" id="hotspotsContainer">
+      <!-- Hotspot 1: Center Roses -->
+      <div class="flower-pin pin-1" style="top: 36%; left: 48%;">
+        <div class="pin-dot pulse-rose" data-title="🌹 Đóa Hồng Tươi Thắm" data-desc="Tượng trưng cho sự kiên cường, tấm lòng bao dung và tình cảm gia đình bền chặt theo năm tháng.">
+          <i class="fa-solid fa-sparkles"></i>
+          <span class="pulse-wave"></span>
+        </div>
+      </div>
+
+      <!-- Hotspot 2: Fairy Lights -->
+      <div class="flower-pin pin-2" style="top: 26%; left: 68%;">
+        <div class="pin-dot pulse-gold" data-title="✨ Ánh Sáng Bình An" data-desc="Cầu chúc sức khỏe dồi dào, tâm hồn an yên và vạn sự hanh thông, an lành mỗi ngày.">
+          <i class="fa-solid fa-sun"></i>
+          <span class="pulse-wave"></span>
+        </div>
+      </div>
+
+      <!-- Hotspot 3: Satin Ribbon -->
+      <div class="flower-pin pin-3" style="top: 56%; left: 50%;">
+        <div class="pin-dot pulse-pink" data-title="🎀 Dải Ruy Băng Gắn Kết" data-desc="Gói ghém trọn vẹn sự hiếu thảo, lòng biết ơn và tri ân những vất vả thầm lặng của người phụ nữ.">
+          <i class="fa-solid fa-heart"></i>
+          <span class="pulse-wave"></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- STYLIZED ACTION DOCK (CÁCH ĐIỆU SANG TRỌNG, TINH TẾ) -->
+    <section class="stylized-action-hub" id="actionHub">
+      <!-- Nút Chính Nổi Bật: MỞ THIỆP CHÚC 20/10 -->
+      <button class="hero-open-card-btn" id="btnOpenCard" title="Chạm để mở thiệp chúc mừng">
+        <div class="btn-shine-bar"></div>
+        <div class="btn-content-wrap">
+          <span class="btn-icon-seal"><i class="fa-solid fa-envelope-open-text"></i></span>
+          <div class="btn-text-group">
+            <span class="btn-main-title">Mở Thiệp Chúc 20/10</span>
+            <span class="btn-sub-caption">Gửi trọn yêu thương & bình an</span>
+          </div>
+          <span class="btn-arrow-badge"><i class="fa-solid fa-chevron-up"></i></span>
+        </div>
+      </button>
+
+      <!-- 2 Nút Phụ Cách Điệu: Thông Điệp Bình An & Tung Mưa Hoa -->
+      <div class="sub-buttons-row">
+        <!-- Nút 1: Lời Chúc Bình An & Sức Khỏe -->
+        <button class="stylized-chip-btn chip-peace" id="btnOpenPeace" title="Thông điệp bình an, sức khỏe và hạnh phúc">
+          <div class="chip-icon"><i class="fa-solid fa-dove"></i></div>
+          <div class="chip-labels">
+            <span class="chip-title">Lời Chúc Bình An</span>
+            <span class="chip-desc">Sức khỏe & An yên</span>
+          </div>
+          <span class="chip-glow"></span>
+        </button>
+
+        <!-- Nút 2: Tung Mưa Hoa Chúc Mừng -->
+        <button class="stylized-chip-btn chip-celebrate" id="btnShowerPetals" title="Tung ngàn cánh hoa hồng và tim bay">
+          <div class="chip-icon"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
+          <div class="chip-labels">
+            <span class="chip-title">Tung Mưa Hoa</span>
+            <span class="chip-desc">Ngập tràn niềm vui</span>
+          </div>
+          <span class="chip-glow"></span>
+        </button>
+      </div>
+    </section>
+
+    <!-- FLOATING GREETING CARD (LỜI CHÚC ĐỜI THỰC, ẤM ÁP, SÂU LẮNG) -->
+    <main class="floating-greeting-card" id="greetingCard">
+      <!-- Card Decorative Header -->
+      <div class="card-deco-header">
+        <div class="card-wax-seal">20.10</div>
+        <div class="card-single-tag">
+          <i class="fa-solid fa-heart"></i> Tri Ân Người Phụ Nữ Đáng Quý
+        </div>
+        <button class="card-minimize-btn" id="btnMinimizeCard" title="Thu gọn để ngắm hoa">
+          <i class="fa-solid fa-chevron-down"></i>
+        </button>
+      </div>
+
+      <!-- Heartfelt Greeting Message Body (Ấm áp, chân thành, phù hợp gửi cho mẹ, người thân và phụ nữ mọi lứa tuổi) -->
+      <div class="card-message-body">
+        <div class="salutation-title" id="salutationText">Kính Gửi Người Phụ Nữ Đáng Quý,</div>
+        <p class="message-text" id="messageText">
+          "Nhân ngày Phụ nữ Việt Nam 20/10, xin gửi những tình cảm chân thành và lời chúc tốt đẹp nhất đến bạn. Cảm ơn vì đã luôn dịu dàng, tần tảo và mang lại sự ấm áp, bình yên cho gia đình cũng như những người xung quanh. Dẫu cuộc sống có nhiều bận rộn lo toan, mong bạn hãy luôn giữ gìn sức khỏe, bớt đi những âu lo, để mỗi ngày trôi qua đều là những ngày an yên, ngập tràn nụ cười và luôn được trân quý, yêu thương trọn vẹn!"
+        </p>
+
+        <div class="message-tags" id="messageTags">
+          <span class="m-tag"><i class="fa-solid fa-heart-pulse"></i> Sức Khỏe Dồi Dào</span>
+          <span class="m-tag"><i class="fa-solid fa-sun"></i> Tâm An Vui</span>
+          <span class="m-tag"><i class="fa-solid fa-house-heart"></i> Vạn Sự Như Ý</span>
+        </div>
+
+        <div class="card-signature" id="signatureText">
+          — Kính chúc vạn sự an lành, tràn đầy yêu thương và hạnh phúc! 💐
+        </div>
+      </div>
+
+      <!-- Card Action Buttons -->
+      <div class="card-action-bar">
+        <button id="btn-voice-read" class="card-btn btn-voice">
+          <i class="fa-solid fa-volume-high"></i> Đọc Lời Chúc
+        </button>
+        <button id="btn-copy-wish" class="card-btn btn-copy">
+          <i class="fa-regular fa-copy"></i> Sao Chép Gửi Zalo
+        </button>
+      </div>
+    </main>
+
+    <!-- PEACEFUL BLESSINGS MODAL (THÔNG ĐIỆP BÌNH AN, SỨC KHỎE & HẠNH PHÚC) -->
+    <div class="popup-modal" id="peaceModal">
+      <div class="modal-card">
+        <button class="btn-close-modal" id="btnClosePeace">&times;</button>
+        <div class="oracle-icon-hub">🕊️</div>
+        <span class="badge-mini">Thông Điệp Yêu Thương 20/10</span>
+        <h3 class="modal-title" id="peaceTitle">Sức Khỏe Dồi Dào & Thảnh Thơi An Yên</h3>
+        <p class="modal-desc" id="peaceDesc">
+          "Cảm ơn những hy sinh, chăm sóc thầm lặng bao năm qua. Chúc bạn/mẹ luôn dồi dào sức khỏe, giấc ngủ sâu ngon, mỗi sáng thức dậy với tâm hồn thanh thản, không còn những muộn phiền âu lo."
+        </p>
+        <div class="modal-btn-row">
+          <button id="btnNextPeace" class="btn-modal-action btn-outline">
+            <i class="fa-solid fa-rotate"></i> Lời Chúc Khác
+          </button>
+          <button id="btnCopyPeace" class="btn-modal-action btn-rose-bg">
+            <i class="fa-solid fa-copy"></i> Sao Chép Lời Chúc
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TOAST NOTIFICATION CONTAINER -->
+    <div id="toastContainer" class="toast-box"></div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

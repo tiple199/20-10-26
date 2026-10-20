@@ -1,0 +1,881 @@
+/* ==========================================================
+   20/10 VIETNAMESE WOMEN'S DAY - LUXURY BOUQUET EXPERIENCE
+   ========================================================== */
+
+:root {
+  --primary: #e11d48;
+  --primary-light: #fb7185;
+  --primary-soft: #ffe4e6;
+  --primary-dark: #9f1239;
+  --gold: #d97706;
+  --gold-light: #fbbf24;
+  --gold-soft: #fef3c7;
+  --card-glass: rgba(255, 255, 255, 0.92);
+  --border-glass: rgba(255, 255, 255, 0.96);
+  --text-main: #1f2937;
+  --text-muted: #6b7280;
+  --radius-xl: 26px;
+  --radius-lg: 18px;
+  --radius-md: 14px;
+  --font-serif: 'Playfair Display', Georgia, serif;
+  --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-script: 'Dancing Script', 'Alex Brush', cursive;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* LOCK SCREEN TO EXACT MOBILE VIEWPORT - NO SCROLLING */
+html, body {
+  width: 100%;
+  height: 100%;
+  height: 100dvh;
+  margin: 0;
+  padding: 0;
+  overflow: hidden !important;
+  font-family: var(--font-sans);
+  background: radial-gradient(circle at center, #2e1065 0%, #0f172a 100%);
+  color: var(--text-main);
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* Ambient Canvas for Falling Rose Petals & Fairy Sparkles */
+#petalsCanvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 20;
+}
+
+/* Mobile Screen Container Frame - Strict 100dvh Fixed View */
+.luxury-app-frame {
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  max-width: 440px;
+  height: 100%;
+  height: 100dvh;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.6), 0 0 45px rgba(225, 29, 72, 0.35);
+  overflow: hidden !important;
+  padding: env(safe-area-inset-top, 10px) 14px env(safe-area-inset-bottom, 12px) 14px;
+}
+
+@media (min-width: 481px) {
+  body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    height: 100vh;
+    padding: 12px 0;
+    overflow: hidden !important;
+  }
+  .luxury-app-frame {
+    height: min(94vh, 850px);
+    border-radius: 36px;
+    border: 7px solid #1e293b;
+    overflow: hidden !important;
+  }
+}
+
+/* Background Bouquet Image with Depth */
+.frame-bg-image {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center top;
+  z-index: -2;
+  transition: transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.luxury-app-frame.view-only .frame-bg-image {
+  transform: scale(1.05);
+}
+
+.frame-bg-gradient-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 241, 242, 0.35) 0%,
+    rgba(255, 241, 242, 0.05) 30%,
+    rgba(0, 0, 0, 0.15) 60%,
+    rgba(15, 23, 42, 0.55) 100%
+  );
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* ==========================================================
+   TOP BAR
+   ========================================================== */
+.luxury-top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 2px 4px 2px;
+  flex-shrink: 0;
+  z-index: 15;
+}
+
+.badge-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  padding: 6px 14px;
+  border-radius: 9999px;
+  border: 1px solid var(--border-glass);
+  box-shadow: 0 4px 16px rgba(225, 29, 72, 0.18);
+}
+
+.blinking-heart {
+  font-size: 0.95rem;
+  animation: pulseBeat 1.5s infinite;
+}
+
+.brand-text {
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: var(--primary-dark);
+}
+
+.top-nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.circle-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(14px);
+  border: 1px solid var(--border-glass);
+  color: var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.95rem;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 4px 15px rgba(225, 29, 72, 0.14);
+}
+
+.circle-btn:hover {
+  transform: scale(1.1);
+}
+
+.circle-btn.playing {
+  background: linear-gradient(135deg, #e11d48, #be123c);
+  color: #ffffff;
+  border-color: transparent;
+  box-shadow: 0 0 16px rgba(225, 29, 72, 0.5);
+}
+
+.wave-indicator {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 7px;
+  height: 7px;
+  background: #22c55e;
+  border-radius: 50%;
+  display: none;
+}
+
+.circle-btn.playing .wave-indicator {
+  display: block;
+  animation: blink 1s infinite;
+}
+
+.pill-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 15px;
+  border-radius: 9999px;
+  border: 1px solid var(--border-glass);
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(14px);
+  color: var(--primary-dark);
+  font-size: 0.78rem;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(225, 29, 72, 0.16);
+  transition: all 0.25s ease;
+}
+
+.pill-toggle-btn:hover {
+  background: #fff1f2;
+  transform: translateY(-2px);
+}
+
+/* ==========================================================
+   HOTSPOT ANNOTATION PINS ON THE BOUQUET
+   ========================================================== */
+.bouquet-hotspots-container {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 5;
+}
+
+.flower-pin {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+.pin-dot {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 2.5px solid #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.95rem;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.38);
+  position: relative;
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.pin-dot:hover {
+  transform: scale(1.25);
+}
+
+.pulse-rose { color: #e11d48; background: #ffe4e6; }
+.pulse-gold { color: #d97706; background: #fef3c7; }
+.pulse-pink { color: #db2777; background: #fce7f3; }
+
+.pulse-wave {
+  position: absolute;
+  inset: -6px;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: 0.35;
+  animation: radarPulse 1.8s infinite ease-out;
+  z-index: -1;
+}
+
+@keyframes radarPulse {
+  0% { transform: scale(0.8); opacity: 0.8; }
+  100% { transform: scale(1.8); opacity: 0; }
+}
+
+/* ==========================================================
+   STYLIZED ACTION DOCK (ANCHORED AT BOTTOM - NO OVERFLOW)
+   ========================================================== */
+.stylized-action-hub {
+  position: absolute;
+  bottom: calc(env(safe-area-inset-bottom, 12px) + 8px);
+  left: 14px;
+  right: 14px;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  transition: transform 0.42s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.35s ease;
+  pointer-events: auto;
+}
+
+/* When viewing card, action hub smoothly slides down below view */
+.luxury-app-frame:not(.view-only) .stylized-action-hub {
+  transform: translateY(140%);
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Hero Open Card Button - Cách điệu lớn, phát sáng sang trọng */
+.hero-open-card-btn {
+  position: relative;
+  width: 100%;
+  padding: 13px 18px;
+  border-radius: var(--radius-xl);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.97) 0%, rgba(255, 241, 242, 0.96) 60%, rgba(254, 226, 226, 0.98) 100%);
+  border: 1.5px solid #fda4af;
+  box-shadow: 0 10px 30px rgba(190, 18, 60, 0.3), 0 0 20px rgba(254, 205, 211, 0.4);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  cursor: pointer;
+  overflow: hidden;
+  transition: all 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
+  text-align: left;
+}
+
+.hero-open-card-btn:active {
+  transform: scale(0.97);
+}
+
+.hero-open-card-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 14px 38px rgba(190, 18, 60, 0.4);
+  border-color: #f43f5e;
+}
+
+.btn-content-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.btn-icon-seal {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #e11d48 20%, #9f1239 80%);
+  color: #fef08a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  box-shadow: 0 4px 14px rgba(159, 18, 57, 0.4);
+  border: 1.5px solid #fda4af;
+  flex-shrink: 0;
+  animation: pulseBeat 2s infinite;
+}
+
+.btn-text-group {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.btn-main-title {
+  font-family: var(--font-serif);
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #9f1239;
+  letter-spacing: -0.2px;
+}
+
+.btn-sub-caption {
+  font-size: 0.73rem;
+  font-weight: 600;
+  color: #6b7280;
+  margin-top: 1px;
+}
+
+.btn-arrow-badge {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #fff1f2;
+  border: 1px solid #fecdd3;
+  color: #e11d48;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  flex-shrink: 0;
+  transition: transform 0.25s ease;
+}
+
+.hero-open-card-btn:hover .btn-arrow-badge {
+  transform: translateY(-2px);
+  background: #e11d48;
+  color: #ffffff;
+}
+
+.btn-shine-bar {
+  position: absolute;
+  top: 0;
+  left: -120px;
+  width: 60px;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent);
+  transform: skewX(-25deg);
+  animation: sweepShine 3.8s infinite;
+  pointer-events: none;
+}
+
+@keyframes sweepShine {
+  0% { left: -120px; }
+  25% { left: 450px; }
+  100% { left: 450px; }
+}
+
+/* 2 Nút Phụ Cách Điệu */
+.sub-buttons-row {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+}
+
+.stylized-chip-btn {
+  flex: 1;
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 10px 12px;
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  border: 1.5px solid transparent;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
+  transition: all 0.24s cubic-bezier(0.34, 1.56, 0.64, 1);
+  overflow: hidden;
+  text-align: left;
+}
+
+.stylized-chip-btn:active {
+  transform: scale(0.96);
+}
+
+.stylized-chip-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.28);
+}
+
+.chip-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  flex-shrink: 0;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.12);
+}
+
+.chip-labels {
+  display: flex;
+  flex-direction: column;
+}
+
+.chip-title {
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: -0.2px;
+}
+
+.chip-desc {
+  font-size: 0.66rem;
+  font-weight: 600;
+  opacity: 0.85;
+}
+
+/* Chip Peace (Bình An & Sức Khỏe) */
+.chip-peace {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.96) 20%, #fffbeb 100%);
+  border-color: #fde68a;
+  color: #92400e;
+}
+.chip-peace .chip-icon {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: #ffffff;
+}
+
+/* Chip Celebrate (Tung Mưa Hoa) */
+.chip-celebrate {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.96) 20%, #fff1f2 100%);
+  border-color: #fecdd3;
+  color: #9f1239;
+}
+.chip-celebrate .chip-icon {
+  background: linear-gradient(135deg, #f43f5e, #be123c);
+  color: #ffffff;
+}
+
+/* ==========================================================
+   FLOATING GREETING CARD (SLIDES OVERLAY - ZERO SCROLLBAR)
+   ========================================================== */
+.floating-greeting-card {
+  position: absolute;
+  bottom: calc(env(safe-area-inset-bottom, 12px) + 8px);
+  left: 14px;
+  right: 14px;
+  z-index: 20;
+  background: var(--card-glass);
+  backdrop-filter: blur(22px);
+  -webkit-backdrop-filter: blur(22px);
+  border-radius: var(--radius-xl);
+  border: 2px solid var(--border-glass);
+  box-shadow: 0 18px 50px rgba(225, 29, 72, 0.32);
+  padding: 14px 14px 12px 14px;
+  transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.35s ease;
+  transform: translateY(0);
+  opacity: 1;
+  pointer-events: auto;
+  max-height: calc(100% - 75px);
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+
+.floating-greeting-card::-webkit-scrollbar {
+  display: none;
+}
+
+/* In view-only mode, greeting card is safely tucked away below viewport */
+.luxury-app-frame.view-only .floating-greeting-card {
+  transform: translateY(140%);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.card-deco-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.card-wax-seal {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #be123c 20%, #881337 80%);
+  color: #fef08a;
+  font-weight: 900;
+  font-size: 0.68rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 3px 10px rgba(136, 19, 55, 0.45);
+  border: 1.5px solid #fda4af;
+  flex-shrink: 0;
+}
+
+.card-single-tag {
+  flex: 1;
+  background: linear-gradient(135deg, #fff1f2, #ffe4e6);
+  border: 1px solid #fecdd3;
+  color: #9f1239;
+  font-size: 0.74rem;
+  font-weight: 800;
+  padding: 6px 12px;
+  border-radius: 9999px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.card-single-tag i {
+  color: #e11d48;
+}
+
+.card-minimize-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #f3f4f6;
+  border: 1px solid #d1d5db;
+  color: #4b5563;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.card-minimize-btn:hover {
+  background: #ffe4e6;
+  color: #e11d48;
+  border-color: #fecdd3;
+}
+
+/* Message Text */
+.card-message-body {
+  margin-bottom: 8px;
+}
+
+.salutation-title {
+  font-family: var(--font-serif);
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #111827;
+  margin-bottom: 4px;
+  letter-spacing: -0.3px;
+}
+
+.message-text {
+  font-family: var(--font-script);
+  font-size: 1.24rem;
+  line-height: 1.35;
+  color: #374151;
+  margin-bottom: 8px;
+}
+
+.message-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.m-tag {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: #9d174d;
+  background: #fff1f2;
+  border: 1px solid #fbcfe8;
+  padding: 3px 8px;
+  border-radius: 9999px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.card-signature {
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: #6b7280;
+  border-top: 1px dashed rgba(0, 0, 0, 0.08);
+  padding-top: 6px;
+  font-style: italic;
+}
+
+/* Action Bar */
+.card-action-bar {
+  display: flex;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.card-btn {
+  flex: 1;
+  padding: 9px 12px;
+  border-radius: 9999px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+}
+
+.btn-voice {
+  background: #f3f4f6;
+  border: 1px solid #d1d5db;
+  color: #374151;
+}
+
+.btn-voice:hover {
+  background: #ffe4e6;
+  color: var(--primary);
+}
+
+.btn-copy {
+  background: linear-gradient(135deg, #e11d48, #be123c);
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(225, 29, 72, 0.35);
+}
+
+.btn-copy:hover {
+  box-shadow: 0 6px 16px rgba(225, 29, 72, 0.5);
+}
+
+/* ==========================================================
+   PEACEFUL BLESSINGS POPUP MODAL
+   ========================================================== */
+.popup-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.popup-modal.show {
+  opacity: 1;
+  visibility: visible;
+}
+
+.modal-card {
+  position: relative;
+  background: #ffffff;
+  border-radius: var(--radius-xl);
+  max-width: 370px;
+  width: 100%;
+  padding: 24px 20px 20px 20px;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.35);
+  text-align: center;
+  transform: scale(0.92) translateY(12px);
+  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  border: 1.5px solid #fed7aa;
+}
+
+.popup-modal.show .modal-card {
+  transform: scale(1) translateY(0);
+}
+
+.btn-close-modal {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: none;
+  background: #f3f4f6;
+  color: #4b5563;
+  font-size: 1.4rem;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s ease;
+}
+
+.btn-close-modal:hover {
+  background: #ffe4e6;
+  color: #e11d48;
+}
+
+.oracle-icon-hub {
+  font-size: 2.8rem;
+  margin-bottom: 6px;
+  animation: pulseBeat 2s infinite;
+}
+
+.badge-mini {
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: 800;
+  color: #be123c;
+  background: #ffe4e6;
+  padding: 3px 12px;
+  border-radius: 9999px;
+  margin-bottom: 8px;
+}
+
+.modal-title {
+  font-family: var(--font-serif);
+  font-size: 1.25rem;
+  color: #111827;
+  margin-bottom: 8px;
+}
+
+.modal-desc {
+  font-size: 0.88rem;
+  color: #4b5563;
+  line-height: 1.55;
+  margin-bottom: 18px;
+}
+
+.modal-btn-row {
+  display: flex;
+  gap: 8px;
+}
+
+.btn-modal-action {
+  flex: 1;
+  padding: 10px 14px;
+  border-radius: 9999px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+}
+
+.btn-outline {
+  background: #f9fafb;
+  border: 1px solid #d1d5db;
+  color: #374151;
+}
+
+.btn-outline:hover {
+  background: #f3f4f6;
+}
+
+.btn-rose-bg {
+  background: linear-gradient(135deg, #e11d48, #be123c);
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(225, 29, 72, 0.35);
+}
+
+/* ==========================================================
+   TOAST BOX
+   ========================================================== */
+.toast-box {
+  position: fixed;
+  bottom: 86px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10000;
+  pointer-events: none;
+  width: 90%;
+  max-width: 360px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.toast {
+  background: rgba(17, 24, 39, 0.95);
+  color: #ffffff;
+  padding: 10px 16px;
+  border-radius: 9999px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  opacity: 0;
+  transform: translateY(12px);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: auto;
+}
+
+.toast.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.toast-icon {
+  color: #fb7185;
+}
+
+@keyframes pulseBeat {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.15); }
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.25; }
+}
