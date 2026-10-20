@@ -156,110 +156,27 @@ function initPetalsCanvas() {
 }
 
 /* ==========================================================
-   2. SYNTHESIZED WEB AUDIO (RANDOM HEARTWARMING SONG JUKEBOX)
+   2. AUDIO ENGINE (PLAY RANDOM SONGS USING LOCAL TRACKS)
    ========================================================== */
-let audioCtx = null;
-let isMusicActive = false;
-let musicTimeout = null;
-let currentSongIndex = -1;
+let bgAudio = null;
+let currentTrackIdx = -1;
+let isMusicPlaying = false;
 
-const NOTE_FREQ = {
-  'G2': 98.00,  'A2': 110.00, 'B2': 123.47,
-  'C3': 130.81, 'C#3': 138.59, 'D3': 146.83, 'D#3': 155.56, 'E3': 164.81, 'F3': 174.61, 'F#3': 185.00, 'G3': 196.00, 'G#3': 207.65, 'A3': 220.00, 'Bb3': 233.08, 'B3': 246.94,
-  'C4': 261.63, 'C#4': 277.18, 'D4': 293.66, 'D#4': 311.13, 'E4': 329.63, 'F4': 349.23, 'F#4': 369.99, 'G4': 392.00, 'G#4': 415.30, 'A4': 440.00, 'Bb4': 466.16, 'B4': 493.88,
-  'C5': 523.25, 'C#5': 554.37, 'D5': 587.33, 'D#5': 622.25, 'E5': 659.25, 'F5': 698.46, 'F#5': 739.99, 'G5': 783.99, 'G#5': 830.61, 'A5': 880.00, 'B5': 987.77,
-  'C6': 1046.50
-};
-
-const songCatalog = [
+const playlist = [
   {
-    title: 'Nhật Ký Của Mẹ',
-    artist: 'Nguyễn Văn Chung',
-    tempo: 440,
-    notes: [
-      { note: 'E4', dur: 1 }, { note: 'A4', dur: 1 }, { note: 'B4', dur: 1 }, { note: 'C5', dur: 2 },
-      { note: 'B4', dur: 1 }, { note: 'A4', dur: 1 }, { note: 'E4', dur: 2 },
-      { note: 'F4', dur: 1 }, { note: 'A4', dur: 1 }, { note: 'C5', dur: 1 }, { note: 'B4', dur: 2 },
-      { note: 'A4', dur: 1 }, { note: 'G4', dur: 1 }, { note: 'E4', dur: 2 },
-      { note: 'D4', dur: 1 }, { note: 'F4', dur: 1 }, { note: 'A4', dur: 1 }, { note: 'G4', dur: 2 },
-      { note: 'F4', dur: 1 }, { note: 'E4', dur: 1 }, { note: 'C4', dur: 2 },
-      { note: 'D4', dur: 1 }, { note: 'E4', dur: 1 }, { note: 'F4', dur: 1 }, { note: 'E4', dur: 1 },
-      { note: 'D4', dur: 1 }, { note: 'C4', dur: 1 }, { note: 'B3', dur: 1 }, { note: 'A3', dur: 3 },
-    ],
-    bassChords: [
-      ['A3', 'C4', 'E4'], ['F3', 'A3', 'C4'], ['D3', 'F3', 'A3'], ['E3', 'G#3', 'B3'], ['A3', 'C4', 'E4']
-    ]
+    title: 'Dạ Khúc Yêu Thương (Nocturne Op. 9 No. 2)',
+    artist: 'F. Chopin • Hòa Tấu Piano',
+    src: 'assets/music_1.mp3'
   },
   {
-    title: 'Gặp Mẹ Trong Mơ',
-    artist: 'Nhạc Mông Cổ / Lời Việt',
-    tempo: 420,
-    notes: [
-      { note: 'A4', dur: 1 }, { note: 'D5', dur: 2 }, { note: 'E5', dur: 1 }, { note: 'F5', dur: 2 },
-      { note: 'E5', dur: 1 }, { note: 'D5', dur: 2 }, { note: 'A4', dur: 2 },
-      { note: 'F4', dur: 1 }, { note: 'G4', dur: 1 }, { note: 'A4', dur: 2 }, { note: 'D5', dur: 2 },
-      { note: 'C5', dur: 1 }, { note: 'A4', dur: 1 }, { note: 'G4', dur: 2 },
-      { note: 'A4', dur: 1 }, { note: 'D5', dur: 2 }, { note: 'F5', dur: 1 }, { note: 'G5', dur: 2 },
-      { note: 'F5', dur: 1 }, { note: 'E5', dur: 1 }, { note: 'D5', dur: 3 },
-      { note: 'D5', dur: 1 }, { note: 'E5', dur: 1 }, { note: 'F5', dur: 2 }, { note: 'E5', dur: 1 },
-      { note: 'D5', dur: 1 }, { note: 'A4', dur: 2 }, { note: 'D5', dur: 3 },
-    ],
-    bassChords: [
-      ['D3', 'F3', 'A3'], ['Bb3', 'D4', 'F4'], ['G3', 'Bb3', 'D4'], ['A3', 'C#4', 'E4'], ['D3', 'F3', 'A3']
-    ]
+    title: 'Giai Điệu Dịu Dàng (Nocturne Op. 55 No. 1)',
+    artist: 'F. Chopin • Piano Trữ Tình',
+    src: 'assets/music_2.ogg'
   },
   {
-    title: 'Bông Hồng Cài Áo',
-    artist: 'Phạm Thế Mỹ',
-    tempo: 460,
-    notes: [
-      { note: 'C4', dur: 1 }, { note: 'E4', dur: 1 }, { note: 'G4', dur: 2 }, { note: 'A4', dur: 1 },
-      { note: 'G4', dur: 1 }, { note: 'E4', dur: 1 }, { note: 'G4', dur: 2 },
-      { note: 'A4', dur: 1 }, { note: 'C5', dur: 2 }, { note: 'D5', dur: 1 }, { note: 'C5', dur: 2 },
-      { note: 'A4', dur: 1 }, { note: 'G4', dur: 1 }, { note: 'E4', dur: 2 },
-      { note: 'G4', dur: 1 }, { note: 'A4', dur: 1 }, { note: 'C5', dur: 2 }, { note: 'E5', dur: 2 },
-      { note: 'D5', dur: 1 }, { note: 'C5', dur: 1 }, { note: 'A4', dur: 2 },
-      { note: 'C5', dur: 1 }, { note: 'A4', dur: 1 }, { note: 'G4', dur: 2 }, { note: 'E4', dur: 1 },
-      { note: 'D4', dur: 1 }, { note: 'E4', dur: 1 }, { note: 'C4', dur: 3 },
-    ],
-    bassChords: [
-      ['C3', 'E3', 'G3'], ['A2', 'C3', 'E3'], ['F3', 'A3', 'C4'], ['G3', 'B3', 'D4'], ['C3', 'E3', 'G3']
-    ]
-  },
-  {
-    title: 'River Flows In You',
-    artist: 'Yiruma (Piano)',
-    tempo: 380,
-    notes: [
-      { note: 'A4', dur: 1 }, { note: 'G#4', dur: 1 }, { note: 'A4', dur: 2 }, { note: 'E4', dur: 2 },
-      { note: 'A4', dur: 1 }, { note: 'B4', dur: 1 }, { note: 'C#5', dur: 2 }, { note: 'B4', dur: 1 },
-      { note: 'A4', dur: 2 }, { note: 'C#5', dur: 1 }, { note: 'D5', dur: 1 }, { note: 'E5', dur: 2 },
-      { note: 'D5', dur: 1 }, { note: 'C#5', dur: 1 }, { note: 'B4', dur: 2 }, { note: 'A4', dur: 1 },
-      { note: 'B4', dur: 3 }, { note: 'A4', dur: 1 }, { note: 'G#4', dur: 1 }, { note: 'A4', dur: 2 },
-      { note: 'E4', dur: 2 }, { note: 'C#5', dur: 1 }, { note: 'B4', dur: 1 }, { note: 'A4', dur: 2 },
-      { note: 'G#4', dur: 1 }, { note: 'A4', dur: 3 },
-    ],
-    bassChords: [
-      ['A2', 'E3', 'A3'], ['F#3', 'A3', 'C#4'], ['D3', 'F#3', 'A3'], ['E3', 'G#3', 'B3'], ['A2', 'E3', 'A3']
-    ]
-  },
-  {
-    title: 'Canon In D Major',
-    artist: 'Johann Pachelbel',
-    tempo: 400,
-    notes: [
-      { note: 'F#4', dur: 2 }, { note: 'E4', dur: 2 }, { note: 'D4', dur: 2 }, { note: 'C#4', dur: 2 },
-      { note: 'B3', dur: 2 }, { note: 'A3', dur: 2 }, { note: 'B3', dur: 2 }, { note: 'C#4', dur: 2 },
-      { note: 'D4', dur: 2 }, { note: 'F#4', dur: 2 }, { note: 'A4', dur: 2 }, { note: 'G4', dur: 2 },
-      { note: 'F#4', dur: 2 }, { note: 'D4', dur: 2 }, { note: 'F#4', dur: 2 }, { note: 'E4', dur: 2 },
-      { note: 'D4', dur: 1 }, { note: 'C#4', dur: 1 }, { note: 'D4', dur: 1 }, { note: 'B3', dur: 1 },
-      { note: 'A3', dur: 1 }, { note: 'F#4', dur: 1 }, { note: 'G4', dur: 1 }, { note: 'A4', dur: 1 },
-      { note: 'B4', dur: 2 }, { note: 'A4', dur: 1 }, { note: 'G4', dur: 1 }, { note: 'F#4', dur: 3 },
-    ],
-    bassChords: [
-      ['D3', 'F#3', 'A3'], ['A2', 'C#3', 'E3'], ['B2', 'D3', 'F#3'], ['F#3', 'A3', 'C#4'],
-      ['G3', 'B3', 'D4'], ['D3', 'F#3', 'A3'], ['G3', 'B3', 'D4'], ['A3', 'C#4', 'E4']
-    ]
+    title: 'Bình An & Ấm Áp (Nocturne Op. 32 No. 1)',
+    artist: 'F. Chopin • Giai Điệu Thanh Bình',
+    src: 'assets/music_3.ogg'
   }
 ];
 
@@ -267,170 +184,77 @@ function initAudioEngine() {
   const btnMusic = document.getElementById('btn-toggle-music');
   if (!btnMusic) return;
 
-  function ensureAudio() {
-    if (!audioCtx) {
-      const AudioCtxClass = window.AudioContext || window.webkitAudioContext;
-      audioCtx = new AudioCtxClass();
-    }
-    if (audioCtx.state === 'suspended') {
-      audioCtx.resume();
-    }
+  if (!bgAudio) {
+    bgAudio = new Audio();
+    bgAudio.volume = 0.85;
+    bgAudio.addEventListener('ended', () => {
+      // Auto play next random song
+      playNextRandomTrack();
+    });
+  }
+
+  function playNextRandomTrack() {
+    let nextIdx;
+    do {
+      nextIdx = Math.floor(Math.random() * playlist.length);
+    } while (playlist.length > 1 && nextIdx === currentTrackIdx);
+
+    currentTrackIdx = nextIdx;
+    const track = playlist[currentTrackIdx];
+
+    bgAudio.src = track.src;
+    bgAudio.play().then(() => {
+      isMusicPlaying = true;
+      btnMusic.classList.add('playing');
+      btnMusic.setAttribute('title', `Đang phát: ${track.title} (Bấm để dừng)`);
+      showToast(`Đang phát ngẫu nhiên: 🎵 ${track.title}`, 'fa-music');
+      if (triggerPetalShower) triggerPetalShower(35);
+    }).catch((err) => {
+      console.warn('Audio play failed:', err);
+      showToast('Hãy bấm lại vào màn hình để nghe nhạc nhé 🎵', 'fa-music');
+    });
   }
 
   btnMusic.addEventListener('click', () => {
-    ensureAudio();
-    if (isMusicActive) {
-      stopMusic();
+    if (isMusicPlaying) {
+      bgAudio.pause();
+      isMusicPlaying = false;
       btnMusic.classList.remove('playing');
       btnMusic.setAttribute('title', 'Bật bài hát ngẫu nhiên');
-      showToast('Đã dừng nhạc 🔇', 'fa-volume-xmark');
+      showToast('Đã dừng phát nhạc 🔇', 'fa-volume-xmark');
     } else {
-      // Pick a random song distinct from the previous one
-      let nextIdx;
-      do {
-        nextIdx = Math.floor(Math.random() * songCatalog.length);
-      } while (songCatalog.length > 1 && nextIdx === currentSongIndex);
-
-      currentSongIndex = nextIdx;
-      const song = songCatalog[currentSongIndex];
-
-      playRandomSong(song);
-      btnMusic.classList.add('playing');
-      btnMusic.setAttribute('title', `Đang phát: ${song.title} (Bấm để dừng)`);
-      showToast(`Đang phát ngẫu nhiên: 🎵 ${song.title} (${song.artist})`, 'fa-music');
-      if (triggerPetalShower) triggerPetalShower(35);
-    }
-    isMusicActive = !isMusicActive;
-  });
-}
-
-// Warm Acoustic Piano Synthesizer Voice
-function playPianoNote(freq, durSeconds = 0.9, gainLevel = 0.08) {
-  if (!audioCtx || audioCtx.state !== 'running') return;
-  try {
-    const now = audioCtx.currentTime;
-
-    // 1. Primary body oscillator (triangle for acoustic warmth)
-    const osc1 = audioCtx.createOscillator();
-    osc1.type = 'triangle';
-    osc1.frequency.setValueAtTime(freq, now);
-
-    // 2. Overtone oscillator (sine with delicate +4 cents shimmer)
-    const osc2 = audioCtx.createOscillator();
-    osc2.type = 'sine';
-    osc2.frequency.setValueAtTime(freq, now);
-    osc2.detune.setValueAtTime(4, now);
-
-    // 3. Lowpass filter for smooth grand piano resonance
-    const filter = audioCtx.createBiquadFilter();
-    filter.type = 'lowpass';
-    filter.frequency.setValueAtTime(2400, now);
-    filter.frequency.exponentialRampToValueAtTime(700, now + durSeconds);
-
-    // 4. Velvet Gain Envelope
-    const gain = audioCtx.createGain();
-    gain.gain.setValueAtTime(0.0001, now);
-    gain.gain.linearRampToValueAtTime(gainLevel, now + 0.018); // hammer strike
-    gain.gain.exponentialRampToValueAtTime(0.0001, now + durSeconds);
-
-    osc1.connect(filter);
-    osc2.connect(filter);
-    filter.connect(gain);
-    gain.connect(audioCtx.destination);
-
-    osc1.start(now);
-    osc2.start(now);
-    osc1.stop(now + durSeconds);
-    osc2.stop(now + durSeconds);
-  } catch (e) {
-    console.warn(e);
-  }
-}
-
-// Gentle arpeggiated bass chord
-function playChord(chordNotes, durSeconds = 1.4, gainLevel = 0.035) {
-  chordNotes.forEach((noteName, idx) => {
-    const freq = NOTE_FREQ[noteName];
-    if (freq) {
-      setTimeout(() => {
-        if (isMusicActive) playPianoNote(freq, durSeconds, gainLevel);
-      }, idx * 28);
+      playNextRandomTrack();
     }
   });
-}
-
-function playRandomSong(song) {
-  stopMusic();
-
-  let noteIdx = 0;
-  let chordIdx = 0;
-  const notes = song.notes;
-  const chords = song.bassChords;
-  const baseTempo = song.tempo;
-
-  function scheduleNextNote() {
-    if (!isMusicActive) return;
-
-    const current = notes[noteIdx];
-    const freq = NOTE_FREQ[current.note];
-    const durSec = (current.dur * baseTempo * 1.5) / 1000;
-
-    if (freq) {
-      playPianoNote(freq, durSec, 0.08);
-    }
-
-    // Accompany with gentle chord every 4 notes or on measure starts
-    if (noteIdx % 4 === 0 && chords.length > 0) {
-      playChord(chords[chordIdx], 1.6, 0.032);
-      chordIdx = (chordIdx + 1) % chords.length;
-    }
-
-    noteIdx = (noteIdx + 1) % notes.length;
-
-    // Schedule next note with exact tempo
-    const delayMs = current.dur * baseTempo;
-    musicTimeout = setTimeout(scheduleNextNote, delayMs);
-  }
-
-  scheduleNextNote();
-}
-
-function stopMusic() {
-  if (musicTimeout) {
-    clearTimeout(musicTimeout);
-    musicTimeout = null;
-  }
 }
 
 function playSound(type = 'chime') {
-  if (!audioCtx) {
+  try {
     const AudioCtxClass = window.AudioContext || window.webkitAudioContext;
-    audioCtx = new AudioCtxClass();
+    const ctx = new AudioCtxClass();
+    const now = ctx.currentTime;
+    const notes = type === 'fanfare' ? [523.25, 659.25, 783.99, 1046.5] : [587.33, 739.99, 880.0];
+
+    notes.forEach((freq, idx) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(freq, now + idx * 0.08);
+
+      gain.gain.setValueAtTime(0.001, now + idx * 0.08);
+      gain.gain.exponentialRampToValueAtTime(0.15, now + idx * 0.08 + 0.03);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + idx * 0.08 + 0.5);
+
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+
+      osc.start(now + idx * 0.08);
+      osc.stop(now + idx * 0.08 + 0.5);
+    });
+  } catch (e) {
+    console.warn(e);
   }
-  if (audioCtx.state === 'suspended') {
-    audioCtx.resume();
-  }
-
-  const now = audioCtx.currentTime;
-  const notes = type === 'fanfare' ? [523.25, 659.25, 783.99, 1046.5] : [587.33, 739.99, 880.0];
-
-  notes.forEach((freq, idx) => {
-    const osc = audioCtx.createOscillator();
-    const gain = audioCtx.createGain();
-
-    osc.type = 'triangle';
-    osc.frequency.setValueAtTime(freq, now + idx * 0.09);
-
-    gain.gain.setValueAtTime(0.001, now + idx * 0.09);
-    gain.gain.exponentialRampToValueAtTime(0.12, now + idx * 0.09 + 0.03);
-    gain.gain.exponentialRampToValueAtTime(0.0001, now + idx * 0.09 + 0.6);
-
-    osc.connect(gain);
-    gain.connect(audioCtx.destination);
-
-    osc.start(now + idx * 0.09);
-    osc.stop(now + idx * 0.09 + 0.6);
-  });
 }
 
 /* ==========================================================
